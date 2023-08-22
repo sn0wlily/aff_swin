@@ -1,0 +1,54 @@
+seed: 42
+task: 'expr'
+
+train_data:
+  args:
+    data_root: '/net/jojo/work/tsuchiya/ABAW/dataset/ABAW5_Aff-wild2/cropped_aligned'
+    label_root: '/net/jojo/work/tsuchiya/ABAW/dataset/ABAW5_Aff-wild2//5th_ABAW_Annotations/EXPR_Classification_Challenge/Train_Set'
+    frame_len: 16
+
+
+val_data:
+  args:
+    data_root: '/net/jojo/work/tsuchiya/ABAW/dataset/ABAW5_Aff-wild2//cropped_aligned'
+    label_root: '/net/jojo/work/tsuchiya/ABAW/dataset/ABAW5_Aff-wild2//5th_ABAW_Annotations/EXPR_Classification_Challenge/Validation_Set'
+    frame_len: 16
+
+model:
+  pretrained: '/net/jojo/work2/tsuchiya/swin_base_patch244_window877_kinetics400_22k.pth'
+  resume: None
+
+dataloader:
+  batch_size: 4
+  num_workers: 2
+  # pin_memory: true
+  # drop_last: false
+
+solver:
+  name: 'RDropSolver'
+  args:
+    epoch: 100
+
+  optimizer:
+    name: 'Adam'
+    args:
+      lr: !!float 1e-4
+      weight_decay: !!float 1e-5
+
+  lr_scheduler:
+    name: 'StepLR'
+    args:
+      step_size: 20
+      gamma: 0.1
+
+  loss:
+    name: 'ExprLoss'
+    args:
+      weight: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+  logger:
+    log_root: 'workdir_aff_swin_122'
+    suffix: 'expr'
+
+  metric:
+    name: 'ExprMetric'
